@@ -22,17 +22,37 @@ export default function BookingForm() {
   const [form, setForm] = useState(initialForm)
   const [status, setStatus] = useState({ state: 'idle', message: '' })
   const [showPopup, setShowPopup] = useState(false)
+  const [validationErrors, setValidationErrors] = useState({})
 
   const handleChange = (e) => {
     const { name, value } = e.target
     setForm((f) => ({ ...f, [name]: value }))
+    // Clear validation error for this field when user starts typing
+    if (validationErrors[name]) {
+      setValidationErrors((prev) => ({ ...prev, [name]: '' }))
+    }
+  }
+
+  const validateForm = () => {
+    const errors = {}
+    if (!form.name.trim()) errors.name = 'Name is required'
+    if (!form.phone.trim()) errors.phone = 'Phone number is required'
+    if (!form.service) errors.service = 'Please select a service'
+    if (!form.message.trim()) errors.message = 'Message is required'
+    
+    setValidationErrors(errors)
+    return Object.keys(errors).length === 0
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
 
-    if (!form.name || !form.phone || !form.service || !form.message) {
-      setStatus({ state: 'error', message: 'Please fill all the required (*) fields.' })
+    // Validate form
+    if (!validateForm()) {
+      setStatus({ 
+        state: 'error', 
+        message: 'Please fill all the required (*) fields.' 
+      })
       return
     }
 
@@ -42,6 +62,7 @@ export default function BookingForm() {
         message:
           'Email service is not configured yet. Add your EmailJS keys to the .env file (see README.md) to activate this form.',
       })
+      setShowPopup(true)
       return
     }
 
@@ -61,11 +82,11 @@ export default function BookingForm() {
       )
       setStatus({ state: 'success', message: 'Thank you! Your request has been sent — we will call you shortly.' })
       setForm(initialForm)
-      setShowPopup(true) // Show popup on success
+      setShowPopup(true)
     } catch (err) {
       console.error(err)
       setStatus({ state: 'error', message: 'Something went wrong sending your request. Please call us directly instead.' })
-      setShowPopup(true) // Show popup on error too
+      setShowPopup(true)
     }
   }
 
@@ -100,7 +121,7 @@ export default function BookingForm() {
               </span>
               <div>
                 <span className="lbl-sm">24/7 Available</span>
-                <a href="tel:+911234567890">+91 12345 67890</a>
+                <a href="tel:+919634728358">+91 9634728358</a>
               </div>
             </div>
 
@@ -145,15 +166,42 @@ export default function BookingForm() {
                   <input
                     className="form-control-rk" id="name" name="name" type="text"
                     placeholder="Your Name" value={form.name} onChange={handleChange} required
+                    style={{
+                      borderColor: validationErrors.name ? '#ef4444' : 'rgba(255,255,255,0.1)',
+                    }}
                   />
+                  {validationErrors.name && (
+                    <span style={{ color: '#ef4444', fontSize: '0.75rem', marginTop: '4px', display: 'block' }}>
+                      {validationErrors.name}
+                    </span>
+                  )}
                 </div>
                 <div className="form-group-rk">
-                  <label htmlFor="phone">Phone Number <span className="req">*</span></label>
-                  <input
-                    className="form-control-rk" id="phone" name="phone" type="tel"
-                    placeholder="e.g. 98765 43210" value={form.phone} onChange={handleChange} required
-                  />
-                </div>
+                    <label htmlFor="phone"> Phone Number <span className="req">*</span></label>
+                    <input className="form-control-rk" d="phone" name="phone" type="tel" placeholder="e.g. 9876543210" value={form.phone}
+                    onChange={(e) => {const value = e.target.value;
+                    if (/^\d*$/.test(value)) 
+                    {
+                      setForm((f) => ({...f, phone: value,}));
+                    }
+                  }}
+                  maxLength={10} required
+                  style={{borderColor: validationErrors.phone? '#ef4444': 'rgba(255,255,255,0.1)',}}
+                />
+
+  {validationErrors.phone && (
+    <span
+      style={{
+        color: '#ef4444',
+        fontSize: '0.75rem',
+        marginTop: '4px',
+        display: 'block',
+      }}
+    >
+      {validationErrors.phone}
+    </span>
+  )}
+</div>
               </div>
 
               <div className="form-group-rk">
@@ -169,12 +217,20 @@ export default function BookingForm() {
                 <select
                   className="form-control-rk" id="service" name="service"
                   value={form.service} onChange={handleChange} required
+                  style={{
+                    borderColor: validationErrors.service ? '#ef4444' : 'rgba(255,255,255,0.1)',
+                  }}
                 >
                   <option value="">Select a service</option>
                   {SERVICE_OPTIONS.map((s) => (
                     <option value={s} key={s}>{s}</option>
                   ))}
                 </select>
+                {validationErrors.service && (
+                  <span style={{ color: '#ef4444', fontSize: '0.75rem', marginTop: '4px', display: 'block' }}>
+                    {validationErrors.service}
+                  </span>
+                )}
               </div>
 
               <div className="form-group-rk">
@@ -183,7 +239,15 @@ export default function BookingForm() {
                   className="form-control-rk" id="message" name="message" rows={4}
                   placeholder="Tell us your pickup point, destination, date and number of passengers…"
                   value={form.message} onChange={handleChange} required
+                  style={{
+                    borderColor: validationErrors.message ? '#ef4444' : 'rgba(255,255,255,0.1)',
+                  }}
                 />
+                {validationErrors.message && (
+                  <span style={{ color: '#ef4444', fontSize: '0.75rem', marginTop: '4px', display: 'block' }}>
+                    {validationErrors.message}
+                  </span>
+                )}
               </div>
 
               <button type="submit" className="btn-rk btn-rk-amber btn-rk-block" disabled={status.state === 'sending'}>
@@ -191,14 +255,8 @@ export default function BookingForm() {
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
               </button>
 
-              {status.state !== 'idle' && status.state !== 'success' && status.state !== 'error' && (
-                <div className={`form-status ${status.state === 'sending' ? 'sending' : status.state}`}>
-                  {status.message}
-                </div>
-              )}
-
               <p className="form-note">
-                Prefer to talk? Call <a href="tel:+911234567890" style={{ fontWeight: 600, color: 'var(--navy)' }}>+91 12345 67890</a> — available 24/7.
+                Prefer to talk? Call <a href="tel:+919634728358" style={{ fontWeight: 600, color: 'var(--navy)' }}>+91 9634728358</a> — available 24/7.
               </p>
             </form>
           </div>
@@ -274,7 +332,7 @@ export default function BookingForm() {
               {status.message}
             </p>
 
-            {/* OK Button */}
+            
             <button
               onClick={closePopup}
               style={{
@@ -303,7 +361,7 @@ export default function BookingForm() {
         </div>
       )}
 
-      {/* CSS Animations */}
+     
       <style>{`
         @keyframes fadeIn {
           from { opacity: 0; }

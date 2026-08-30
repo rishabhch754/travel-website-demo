@@ -151,7 +151,7 @@ export default function Hero() {
             
             {/* Call to Book Button with Animation */}
             <a 
-              href="tel:+911234567890" 
+              href="tel:+919634728358" 
               className="btn-rk btn-rk-outline" 
               style={{
                 display: 'inline-flex',

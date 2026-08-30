@@ -45,11 +45,11 @@ export default function Header() {
           </nav>
 
           <div className="header-actions">
-            <a className="header-call" href="tel:+911234567890">
+            <a className="header-call" href="tel:+919634728358">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.9.34 1.79.65 2.65a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.43-1.27a2 2 0 0 1 2.11-.45c.86.31 1.75.53 2.65.65A2 2 0 0 1 22 16.92z" />
               </svg>
-              +91 12345 67890
+              +91 9634728358
             </a>
             <a href="#contact" className="btn-rk btn-rk-amber btn-rk-sm">Book Now</a>
             <button className="nav-toggle" aria-label="Open menu" onClick={() => setDrawerOpen(true)}>
@@ -69,11 +69,11 @@ export default function Header() {
         {NAV_LINKS.map((l) => (
           <a key={l.href} href={l.href} onClick={() => setDrawerOpen(false)}>{l.label}</a>
         ))}
-        <a className="header-call" href="tel:+911234567890">
+        <a className="header-call" href="tel:+919634728358">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.9.34 1.79.65 2.65a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.43-1.27a2 2 0 0 1 2.11-.45c.86.31 1.75.53 2.65.65A2 2 0 0 1 22 16.92z" />
           </svg>
-          +91 12345 67890
+          +91 9634728358
         </a>
       </aside>
     </>
