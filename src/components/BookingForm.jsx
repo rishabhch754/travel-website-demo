@@ -33,10 +33,42 @@ export default function BookingForm() {
     }
   }
 
+  // Updated phone validation with better error messages
+  const validatePhone = (phone) => {
+    // Remove any spaces for validation
+    const cleanPhone = phone.replace(/\s/g, '')
+    
+    // Check if phone contains only digits and optional '+'
+    if (!/^\+?[\d]*$/.test(cleanPhone)) {
+      return 'Only numbers and + are allowed'
+    }
+    
+    // Remove '+' for length check if present
+    const phoneWithoutPlus = cleanPhone.replace(/^\+/, '')
+    
+    if (phoneWithoutPlus.length === 0) {
+      return 'Phone number is required'
+    }
+    
+    if (phoneWithoutPlus.length < 10) {
+      return 'Phone number must be at least 10 digits'
+    }
+    
+    if (phoneWithoutPlus.length > 15) {
+      return 'Phone number cannot exceed 15 digits'
+    }
+    
+    return '' // No error
+  }
+
   const validateForm = () => {
     const errors = {}
     if (!form.name.trim()) errors.name = 'Name is required'
-    if (!form.phone.trim()) errors.phone = 'Phone number is required'
+    
+    // Phone validation with detailed messages
+    const phoneError = validatePhone(form.phone)
+    if (phoneError) errors.phone = phoneError
+    
     if (!form.service) errors.service = 'Please select a service'
     if (!form.message.trim()) errors.message = 'Message is required'
     
@@ -51,7 +83,7 @@ export default function BookingForm() {
     if (!validateForm()) {
       setStatus({ 
         state: 'error', 
-        message: 'Please fill all the required (*) fields.' 
+        message: 'Please fill all the required (*) fields correctly.' 
       })
       return
     }
@@ -177,31 +209,46 @@ export default function BookingForm() {
                   )}
                 </div>
                 <div className="form-group-rk">
-                    <label htmlFor="phone"> Phone Number <span className="req">*</span></label>
-                    <input className="form-control-rk" d="phone" name="phone" type="tel" placeholder="e.g. 9876543210" value={form.phone}
-                    onChange={(e) => {const value = e.target.value;
-                    if (/^\d*$/.test(value)) 
-                    {
-                      setForm((f) => ({...f, phone: value,}));
-                    }
-                  }}
-                  maxLength={10} required
-                  style={{borderColor: validationErrors.phone? '#ef4444': 'rgba(255,255,255,0.1)',}}
-                />
-
-  {validationErrors.phone && (
-    <span
-      style={{
-        color: '#ef4444',
-        fontSize: '0.75rem',
-        marginTop: '4px',
-        display: 'block',
-      }}
-    >
-      {validationErrors.phone}
-    </span>
-  )}
-</div>
+                  <label htmlFor="phone">Phone Number <span className="req">*</span></label>
+                  <input 
+                    className="form-control-rk" 
+                    id="phone" 
+                    name="phone" 
+                    type="tel" 
+                    placeholder="e.g. +91 9876543210" 
+                    value={form.phone}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      // Only allow digits and '+' sign
+                      if (/^[\d+]*$/.test(value)) {
+                        setForm((f) => ({...f, phone: value}));
+                        // Clear validation error when user types
+                        if (validationErrors.phone) {
+                          setValidationErrors((prev) => ({...prev, phone: ''}));
+                        }
+                      }
+                    }}
+                    minLength={10}
+                    maxLength={16}
+                    required
+                    style={{
+                      borderColor: validationErrors.phone ? '#ef4444' : 'rgba(255,255,255,0.1)',
+                    }}
+                  />
+                  {validationErrors.phone && (
+                    <span style={{ color: '#ef4444', fontSize: '0.75rem', marginTop: '4px', display: 'block' }}>
+                      {validationErrors.phone}
+                    </span>
+                  )}
+                  <span style={{ 
+                    color: 'rgba(255,255,255,0.4)', 
+                    fontSize: '0.7rem', 
+                    marginTop: '4px', 
+                    display: 'block' 
+                  }}>
+                    Enter 10-15 digits (e.g., +91 9876543210)
+                  </span>
+                </div>
               </div>
 
               <div className="form-group-rk">
